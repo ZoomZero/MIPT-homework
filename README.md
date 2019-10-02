@@ -1,3 +1,3 @@
-# EquatonSolver
+# MIPT-homework
 
-Solution of square equation ax^2+bx+c=0
+Just repository with my MIPT tasks.
