@@ -5,42 +5,7 @@
 #include <assert.h>
 #include <locale.h>
 
-int mystrcmp(const void* line1, const void* line2);
-int counter(char text[], long int pos);
-char* size_and_buffer(char * filename, long int *pos);
-char** linepointers(char *text, int count, int pos);
-void filewrite(char* filename, char** letter, int count);
-
 const int MAX_NAME = 15; //!< define max number of cymbols for filename
-
-int main()
-{
-  SetConsoleCP(1251);
-  SetConsoleOutputCP(1251);
-  setlocale (LC_ALL, "CP1251");
-
-  long int pos = 0;
-
-  char* infilename = (char*)calloc(MAX_NAME, sizeof(char));
-  printf("%s\n", "Enter in file name");
-  scanf("%s", infilename);
-
-  char * text = size_and_buffer(infilename, &pos);
-  int count = counter(text, pos);
-  char **letter = linepointers(text, count, pos);
-
-  qsort(letter, count, sizeof(char*), mystrcmp);
-
-  char* outfilename = (char*)calloc(MAX_NAME, sizeof(char));
-  printf("%s\n", "Enter out file name");
-  scanf("%s", outfilename);
-
-  filewrite(outfilename, letter, count);
-
-  free(text);
-  free(letter);
-  return 0;
-}
 
 //------------------------------------------------------------------------
 //! Compare lines by their ends
@@ -82,6 +47,45 @@ int mystrcmp(const void* line1, const void* line2)
   return 0;
 }
 
+//------------------------------------------------------------------------
+//! Compare lines by their ends
+//!
+//! @param [in] line1 first line
+//! @param [in] line2 second line
+//!
+//! @return 1 if first line is bigger, -1 if second line is bigger and  0 if lines are equal
+//------------------------------------------------------------------------
+int backstrcmp(const void* line1, const void* line2)
+{
+  assert(line1 != NULL);
+  assert(line2 != NULL);
+
+  const char* s1 = *(char**) line1;
+  const char* s2 = *(char**) line2;
+
+  if (s1[0] == 0 && s2[0] == 0) return 0;
+  if (s1[0] == 0) return -1;
+  if (s2[0] == 0) return 1;
+
+  const char* str1 = s1 + strlen(s1) - 1;
+  const char* str2 = s2 + strlen(s2) - 1;
+
+  for ( ; *(str1) && *(str2); str1--, str2--)
+  {
+    while (*str1 && !isalnum(*str1)) str1--;
+    while (*str2 && !isalnum(*str2)) str2--;
+    char c1 = tolower(*str1);
+    char c2 = tolower(*str2);
+    if (c1 > c2)
+      return 1;
+    else if (c1 < c2)
+      return -1;
+  }
+
+if(!*str1 &&  *str2) return -1;
+if(!*str2 &&  *str1) return 1;
+return 0;
+}
 
 //------------------------------------------------------------------------
 //! Count number of lines in poem
@@ -133,7 +137,7 @@ char* size_and_buffer(char * filename, long int *pos)
   FILE * file = fopen(filename, "r");
   if (file == NULL)
   {
-    printf("%s\n", "Error reading file");
+    printf("%s\n", "Error reading file int f. size_and_buffer");
     return NULL;
   }
 
@@ -200,4 +204,73 @@ void filewrite(char* filename, char** letter, int count)
     fprintf(result, "%s\n", letter[i]);
   }
   fclose(result);
+}
+
+//------------------------------------------------------------------------
+//! Adds new array in file
+//!
+//! @param [in] filename name of output file
+//! @param [in] letter array of text
+//! @param [in] count number of lines in array
+//!
+//! @return nothing
+//------------------------------------------------------------------------
+void fileadder(char* filename, char** letter, int count)
+{
+  assert(filename != NULL);
+  assert(letter != NULL);
+
+  FILE * result = fopen(filename, "a");
+  fprintf(result, "\n");
+  for(int i = 0; i < count; i++)
+  {
+    if (*letter[i] == '\0') continue;
+    fprintf(result, "%s\n", letter[i]);
+  }
+  fprintf(result, "\n");
+  fclose(result);
+}
+
+//------------------------------------------------------------------------
+//! Copy test from file to another file
+//!
+//! @param [in] filename1 name of output file
+//! @param [in] filename2 name of input file
+//!
+//! @return nothing
+//------------------------------------------------------------------------
+void filecopy(char* filename1, char* filename2)
+{
+  /*assert(filename1 != NULL);
+  assert(filename2 != NULL);
+
+  FILE * file = fopen(filename1, "r");
+
+  assert(file != NULL);
+
+  fseek(file, 0, SEEK_END);
+
+  *pos = ftell(file);
+  char * text = (char*)calloc(*pos + 1, sizeof(char));
+
+  fseek(file, 0, SEEK_SET);
+  fread(text, sizeof(char), *pos, file);
+  fclose(file);
+
+  FILE * result = fopen(filename2, "a");
+  for(int i = 0, i<)
+  fputs(text, result);
+  fclose(result);*/
+  char * line = (char*)calloc(MAX_NAME*3, sizeof(char));
+  line[0] = 'c';
+  line[1] = 'a';
+  line[2] = 't';
+  line[3] = ' ';
+  char oper[4] = {" >> "};
+  strcat(line, filename1);
+  printf("%s\n", line);
+  strcat(line, oper);
+  strcat(line, filename2);
+  system(line);
+  free(line);
 }
