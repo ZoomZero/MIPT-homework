@@ -103,20 +103,21 @@ int counter(char text[], long int pos)
 
   int count = 0;
 
-  for (int i = 0; i < pos; ++i)
+  for (int i = 0; (i < pos) && (text [i] != '\0'); ++i)
   {
     if (text[i] == '\n')
     {
-      ++count;
-      i++;
       while(text[i] == '\n')
         i++;
+      ++count;
+      i++;
     }
   }
-  if (count == 0)
+
+  if (count == 1 && text[0] == '\n')
   {
     printf("%s\n", "File is empty");
-    return 0;
+    exit (1);
   }
   else return count;
 }
@@ -167,8 +168,7 @@ char** linepointers(char *text, int count, int pos)
 
   char **letter = (char**)calloc(count + 5, sizeof(char*));
 
-  letter[0] = text;
-  for (int i = 0, j = 1; i < pos; i++)
+  for (int i = 0, j = 0; i < pos; i++)
   {
     if (text[i] == '\n')
     {
