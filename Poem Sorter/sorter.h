@@ -241,7 +241,7 @@ void fileadder(char* filename, char** letter, int count)
 //------------------------------------------------------------------------
 void filecopy(char* filename1, char* filename2)
 {
-  /*assert(filename1 != NULL);
+  assert(filename1 != NULL);
   assert(filename2 != NULL);
 
   FILE * file = fopen(filename1, "r");
@@ -250,17 +250,29 @@ void filecopy(char* filename1, char* filename2)
 
   fseek(file, 0, SEEK_END);
 
-  *pos = ftell(file);
-  char * text = (char*)calloc(*pos + 1, sizeof(char));
+  int pos = ftell(file);
+  char * text = (char*)calloc(pos + 1, sizeof(char));
 
   fseek(file, 0, SEEK_SET);
-  fread(text, sizeof(char), *pos, file);
+  fread(text, sizeof(char), pos, file);
+  free(text);
   fclose(file);
 
   FILE * result = fopen(filename2, "a");
-  for(int i = 0, i<)
   fputs(text, result);
-  fclose(result);*/
+  fclose(result);
+}
+
+//------------------------------------------------------------------------
+//! Copy test from file to another file
+//!
+//! @param [in] filename1 name of output file
+//! @param [in] filename2 name of input file
+//!
+//! @return nothing
+//------------------------------------------------------------------------
+void filecopy2(char* filename1, char* filename2)
+{
   char * line = (char*)calloc(MAX_NAME*3, sizeof(char));
   line[0] = 'c';
   line[1] = 'a';
