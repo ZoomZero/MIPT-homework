@@ -2,10 +2,9 @@
 
 int main()
 {
-  //всякие указатели
   elem_t elem = 0;
 
-  StackConstruct(&st);
+  StackConstruct(&st, 3);
 
   printf("%s\n", "Enter stack element");
   scanf("%d", &elem);
@@ -14,5 +13,5 @@ int main()
 
   printf("%d\n", StackPop(&st));
 
-  //StackDestruct(&st);
+  StackDestruct(&st);
 }
