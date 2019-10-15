@@ -7,6 +7,7 @@
 #include <stdarg.h>
 
 #define VAR_NAME(var) #var
+#define stack_t struct stack
 
 #define assert_stack(stk) {\
   if (!(StackOk(stk)))\
@@ -50,18 +51,6 @@ enum STACK_ERRORS
 
 typedef int elem_t;
 
-typedef struct stck
-{
-  int cannery1;
-  int cannery2;
-  int size;
-  elem_t * data;
-  int capacity;
-  elem_t hash;
-  int cannery3;
-  int cannery4;
-} stack_t;
-
 typedef enum
 {
   false,
@@ -82,7 +71,7 @@ struct stack
   int cannery4;
 } st;
 
-elem_t StackConstruct(stack_t * stk, ...)
+int StackConstruct(stack_t * stk, ...)
 {
   assert(stk);
 
@@ -128,7 +117,7 @@ elem_t StackConstruct(stack_t * stk, ...)
   return true;
 }
 
-elem_t StackPush(stack_t * stk, elem_t data)
+int StackPush(stack_t * stk, elem_t data)
 {
   assert_stack(stk);
   assert_var(data);
@@ -240,7 +229,7 @@ void StackClear(stack_t * stk)
   stk->size = 0;
 }
 
-elem_t StackDestruct(stack_t * stk)
+int StackDestruct(stack_t * stk)
 {
   assert_stack(stk);
 
@@ -303,15 +292,15 @@ void StackDump(stack_t * stk)
   fclose(dump);
 }
 
-elem_t murmur_hash(stack_t * stk)
+int murmur_hash(stack_t * stk)
 {
   assert(stk);
 
   const int m = 0xDED;
   const int r = 12;
 
-  elem_t h = 1;
-  elem_t k = 0;
+  int h = 1;
+  int k = 0;
 
   const elem_t * data = stk->data;
   int size = stk->size;
