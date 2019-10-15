@@ -109,11 +109,10 @@ int counter(char text[], long int pos)
     {
       while(text[i] == '\n')
         i++;
-      ++count;
+      count++;
       i++;
     }
   }
-
   if (count == 1 && text[0] == '\n')
   {
     printf("%s\n", "File is empty");
@@ -255,11 +254,11 @@ void filecopy(char* filename1, char* filename2)
 
   fseek(file, 0, SEEK_SET);
   fread(text, sizeof(char), pos, file);
-  free(text);
   fclose(file);
 
   FILE * result = fopen(filename2, "a");
   fputs(text, result);
+  free(text);
   fclose(result);
 }
 
