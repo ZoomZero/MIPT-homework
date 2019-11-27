@@ -42,7 +42,7 @@ Node * NewMem(Node * n)
   scanf("%s", new_mem);
 
   printf("Чем отличается %s от %s?\n", new_mem, n->word);
-  scanf("%s\n", difference);
+  scanf(" %s\n", difference);
 
   Node * newm = calloc(1, sizeof(Node));
   Node * move = calloc(1, sizeof(Node));
@@ -63,7 +63,9 @@ Node * NewMem(Node * n)
 
 Node * TreeElemCtr(tree * name_tree, int * i, char * buffer)
 {
-  //assert_tree(name_tree);
+  assert(name_tree);
+  assert(i);
+  assert(buffer);
 
   if (buffer[*i] == '{')
   {
@@ -79,7 +81,7 @@ Node * TreeElemCtr(tree * name_tree, int * i, char * buffer)
     }
 
     node->word = &buffer[*i];
-    while (!(buffer[*i] == '{' || buffer[*i] == '}') ) (*i)++;
+    while (!(buffer[*i] == '{' || buffer[*i] == '}')) (*i)++;
     buffer[*i - 1] = '\0';
     node->word = strdup(node->word);
 
@@ -134,6 +136,108 @@ int ReadTree(tree * Atree, char * filename)
 
   free(elems);
   assert_tree(Atree);
+}
+
+Node * visit(Node * n, char * obj, Node ** res)
+{
+ if (!n) return NULL;
+ printf("%s %d %s\n", n->word, strcmp(n->word, obj), obj);
+ if (strcmp(n->word, obj) == 0)
+ {
+   *res = n;
+   printf("%s\n", (*res)->word);
+   return n;
+}
+
+ Node * ss = visit(n->left, obj, res);
+ if (!ss) visit(n->right, obj, res);
+
+ return ss;
+}
+
+void searcher(tree MyTree)
+{
+  printf( "+---------------------------------------+\n"
+          "|\tА мне за это что? Ладно...\t|\n"
+          "|\tКого тебе найти надобно?\t|\n"
+          "+---------------------------------------+\n");
+
+  char * mem = (char*)calloc(MAX_LINE, sizeof(char));
+  scanf("%s", mem);
+
+  stack_t st;
+  StackConstruct(&st, 4);
+
+  Node * pos; //= NULL;
+  visit(MyTree.root, mem, &pos);
+  printf("уу%s\n", pos->word);
+  if (pos == NULL)
+  {
+    printf("Таких не знаем\n");
+    return;
+  }
+
+  while (pos != NULL)
+  {
+    StackPush(&st, pos->word);
+    pos = (pos->parent);
+  }
+
+  pos = MyTree.root;
+  int p = 0;
+
+  printf("Это ");
+  while (st.size >=0)
+  {
+    if (strcmp(pos->left->word, st.data[p]) == 0)
+    {
+      printf(", %s", pos->left);
+      pos = pos->left;
+    }
+    else
+    {
+      printf(", не %s", pos->word);
+      pos = pos->right;
+    }
+    p++;
+    st.size--;
+  }
+  printf(".\n");*/
+  StackDestruct(&st);
+}
+
+void root_graph(Node * n, FILE * f_dot)
+{
+  if (n->left != NULL)
+  {
+    fprintf(f_dot, "\t\"%s\"\n\t\t\"%s\"->\"%s\" [label = \"Yes\"]\n\n", n->word, n->word, n->left->word);
+    root_graph(n->left, f_dot);
+  }
+  if (n->right != NULL)
+  {
+    fprintf(f_dot, "\t\"%s\"\n\t\t\"%s\"->\"%s\" [label = \"No\"]\n\n", n->word, n->word, n->right->word);
+    root_graph(n->right, f_dot);
+  }
+}
+
+void digraph(Node * n, char * filename)
+{
+  assert(n);
+  assert(filename);
+
+  FILE * f_dot = fopen(filename, "w+");
+  assert(f_dot);
+
+  fprintf(f_dot, "digraph {\n");
+  fprintf(f_dot, "\t\tnode [shape=\"circle\", style=\"filled\", fillcolor=\"blue\", fontcolor=\"#FFFFFF\", margin=\"0.01\"];\n");
+  fprintf(f_dot, "\t\tedge [style=\"dashed\"];\n\n");
+
+  root_graph(n, f_dot);
+
+  fprintf(f_dot, "}");
+  fclose(f_dot);
+
+  system("dot -Tjpg digraph -o tree.jpg");
 }
 
 #endif _AKINATOR_H_

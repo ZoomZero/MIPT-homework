@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdarg.h>
 #include "Tree/tree.h"
+#include "stack.h"
 #include "akinator.h"
 
 int main(int argc, char * argv[])
@@ -10,7 +14,7 @@ int main(int argc, char * argv[])
   printf( "+-------------------------------+\n"
           "|\tAкинатор-имбицил\t|\n"
           "|\tCоздано ZoomZero\t|\n"
-          "|\tВерсия 0.1 (beta)\t|\n"
+          "|\tВерсия 0.2 (beta)\t|\n"
           "+-------------------------------+\n");
 
   printf( "+---------------------------------------+\n"
@@ -20,7 +24,7 @@ int main(int argc, char * argv[])
           "|\t\t[y] - да, [n]- нет\t|\n"
           "+---------------------------------------+\n");
 
-  char ans = 'z';
+  char ans = 0;
   scanf("%c", &ans);
 
   if (ans == 'n')
@@ -72,6 +76,9 @@ int main(int argc, char * argv[])
     else if (ans == 's')
     {
       printf("Сначала поговорим о награде\n");
+      printf("Кого тебе найти надобно?\n");
+
+      searcher(MyTree);
     }
     else printf("И чего ты этим добиваешься?\n");
 
@@ -96,5 +103,9 @@ int main(int argc, char * argv[])
 
   PrintTree(MyTree.root, out_tree);
   fclose(out_tree);
+
+  digraph(MyTree.root, "digraph");
+
+  TreeDeleter(&MyTree);
   return 0;
 }

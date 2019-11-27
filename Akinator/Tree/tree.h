@@ -95,12 +95,12 @@ Node * node_creator(tree * name_tree, Node * position, data_t info, char branch)
 
 void TreeDeleter(tree * name_tree)
 {
-  assert_tree(name_tree);
+  //assert_tree(name_tree);
 
   name_tree->size = 0;
   name_tree->root = NULL;
 
-  assert_tree(name_tree);
+  //assert_tree(name_tree);
 }
 
 void PrintTree(Node * n, FILE * out_tree)
@@ -151,7 +151,6 @@ int TreeOk(tree * name_tree)
 
   int pos = 0;
   TreeElemOk(name_tree->root, &pos);
-
   if(pos != name_tree->size)                                 return false;
 
   return true;
