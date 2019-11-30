@@ -156,4 +156,4 @@ int TreeOk(tree * name_tree)
   return true;
 }
 
-#endif _TREE_H_
+#endif

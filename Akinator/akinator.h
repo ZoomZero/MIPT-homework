@@ -42,7 +42,7 @@ Node * NewMem(Node * n)
   scanf("%s", new_mem);
 
   printf("Чем отличается %s от %s?\n", new_mem, n->word);
-  scanf(" %s\n", difference);
+  scanf(" %s", difference);
 
   Node * newm = calloc(1, sizeof(Node));
   Node * move = calloc(1, sizeof(Node));
@@ -138,24 +138,17 @@ int ReadTree(tree * Atree, char * filename)
   assert_tree(Atree);
 }
 
-Node * visit(Node * n, char * obj, Node ** res)
+void visit(Node * n, char * obj, Node ** res)
 {
- if (!n) return NULL;
- printf("%s %d %s\n", n->word, strcmp(n->word, obj), obj);
- if (strcmp(n->word, obj) == 0)
- {
-   *res = n;
-   printf("%s\n", (*res)->word);
-   return n;
+ if (!n) return;
+
+ if (strcmp(n->word, obj) == 0) *res = n;
+
+ visit(n->left, obj, res);
+ visit(n->right, obj, res);
 }
 
- Node * ss = visit(n->left, obj, res);
- if (!ss) visit(n->right, obj, res);
-
- return ss;
-}
-
-void searcher(tree MyTree)
+void searcher(Node * n)
 {
   printf( "+---------------------------------------+\n"
           "|\tА мне за это что? Ладно...\t|\n"
@@ -163,14 +156,14 @@ void searcher(tree MyTree)
           "+---------------------------------------+\n");
 
   char * mem = (char*)calloc(MAX_LINE, sizeof(char));
-  scanf("%s", mem);
+  scanf(" %s", mem);
 
   stack_t st;
   StackConstruct(&st, 4);
 
-  Node * pos; //= NULL;
-  visit(MyTree.root, mem, &pos);
-  printf("уу%s\n", pos->word);
+  Node * pos = NULL;
+  visit(n, mem, &pos);
+
   if (pos == NULL)
   {
     printf("Таких не знаем\n");
@@ -183,26 +176,24 @@ void searcher(tree MyTree)
     pos = (pos->parent);
   }
 
-  pos = MyTree.root;
-  int p = 0;
+  pos = n;
 
   printf("Это ");
-  while (st.size >=0)
+  while (st.size > 1)
   {
-    if (strcmp(pos->left->word, st.data[p]) == 0)
+    if (strcmp(pos->left->word, st.data[st.size - 2]) == 0)
     {
-      printf(", %s", pos->left);
+      printf("%s, ", pos->word);
       pos = pos->left;
     }
     else
     {
-      printf(", не %s", pos->word);
+      printf("не %s, ", pos->word);
       pos = pos->right;
     }
-    p++;
-    st.size--;
+    StackPop(&st);
   }
-  printf(".\n");*/
+  printf(".\n");
   StackDestruct(&st);
 }
 
@@ -240,4 +231,4 @@ void digraph(Node * n, char * filename)
   system("dot -Tjpg digraph -o tree.jpg");
 }
 
-#endif _AKINATOR_H_
+#endif

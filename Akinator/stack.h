@@ -71,7 +71,7 @@ elem_t StackPop(stack_t * stk)
   }
 
   elem_t val = stk->data[--stk->size];
-  free(stk->data[stk->size + 1]);
+  //free(stk->data[stk->size + 1]);
 
   if (stk->size < stk->capacity/(MULTIPLIER*MULTIPLIER))
   {
@@ -109,7 +109,7 @@ int StackDestruct(stack_t * stk)
 
   if (stk->data != NULL)
   {
-    memset(stk->data, poison, (stk->capacity + 4) * sizeof(elem_t));
+    memset(stk->data, poison, stk->capacity  * sizeof(elem_t));
     free(stk->data);
     stk->data = NULL;
   }

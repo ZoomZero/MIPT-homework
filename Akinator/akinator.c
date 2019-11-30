@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
       printf("Сначала поговорим о награде\n");
       printf("Кого тебе найти надобно?\n");
 
-      searcher(MyTree);
+      searcher(MyTree.root);
     }
     else printf("И чего ты этим добиваешься?\n");
 
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
             "|\tCыграем ещё разок, сладенький?\t|\n"
             "|\t\t[y] - давай, [q]- нет\t|\n"
             "+---------------------------------------+\n");
-
+    fflush(stdin);
     scanf(" %c", &ans);
 
     if (ans != 'y')
