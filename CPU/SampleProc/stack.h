@@ -1,3 +1,6 @@
+#ifndef _STACK_H_
+#define _STACK_H_
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -340,3 +343,5 @@ int murmur_hash(stack_t * stk)
 
   return h;
 }
+
+#endif _STACK_H_

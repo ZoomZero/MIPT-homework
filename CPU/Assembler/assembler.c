@@ -6,6 +6,7 @@
 #include <string.h>
 
 const char poison = 255;
+int p = 0;
 
 #define label_t struct labels
 
@@ -91,19 +92,20 @@ void label_creator(label_t * label, int label_cnt, char ** commands, int comm_co
   }
 }
 
-int translator(char * par, label_t label[], int label_cnt)
+int translator(char * par, label_t label[], int label_cnt, char ** commands)
 {
   //assert(commands != NULL);
   //assert(buffer != NULL);
-  #define DEF_CMD(name, number, spec, code) \
-  if (strcmp(#name, par) == 0) \
-  { \
-    spec; \
-    return number; \
-  }\
+  printf("beg par = %s\n", par);
+  #define DEF_CMD(name, number, spec, code) if (strcmp(par, #name) == 0) { \
+                                                spec; \
+                                                printf("name in DEF_CMD = %s\n", #name); \
+                                                return number; \
+                                            }
 
   #include "../commands.h"
 
+  #undef DEF_CMD
 
   /*for(int i = 0; i < comm_count; i++)
   {
@@ -177,17 +179,25 @@ int main(int argc, char const *argv[])
   label_creator(label, label_count, commands, comm_count);
   //for(int i = 0; i < label_count; i++) printf("%s\n", label[i].name);
   int * binarycode = (int*)calloc(comm_count, sizeof(int));
+  //printf("%s\n", commands[0]);
   /*printf("%s\n", *commands);
   *(commands++);
   printf("%s\n", *commands);*/
   //translator(commands, comm_count, binarycode, label_count);
-  /*for(char * p = *commands; *commands; *(commands++))
+  int t = 0;
+  for( ; p < comm_count; p++)
   {
-    binarycode[i] = translator(*commands, label);
-    printf("%d ", binarycode[i]);
+    int between = translator(commands[p], label, label_count, commands);
+    printf("between = %d\n", between);
+    if (between != -1 && between != 0)
+    {
+      binarycode[t] = between;
+      t++;
+    }
   }
 
-  code_to_file(binarycode, comm_count);
+  for(int k = 0; k < comm_count - label_count; k++) printf("%d\n", binarycode[k]);
+  //code_to_file(binarycode, comm_count - label_count);
 
   //label_clner(label, label_count);*/
   free(input);

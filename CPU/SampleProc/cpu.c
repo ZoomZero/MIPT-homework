@@ -1,10 +1,12 @@
 #include "stack.h"
 
-#define DEF_CMD(name, number, spec, code) \
-case number: {\
-  code;\
-  break;\
-}\
+struct Info
+{
+  int ax;
+  int bx;
+  int cx;
+  int dx;
+};
 
 int * size_and_buffer(char * filename, long int *pos)
 {
@@ -31,6 +33,14 @@ int * size_and_buffer(char * filename, long int *pos)
 
 int executor()
 {
+  #define DEF_CMD(name, number, spec, code) \
+  case number: {\
+    code;\
+    break;\
+  }\
+
+    #include "../commands.h"
+
 
 }
 
