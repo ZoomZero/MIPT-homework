@@ -174,8 +174,6 @@ Node * NodeAlloc(tree * name_tree)
 {
   assert(name_tree != NULL);
 
-  printf("Allocated node\n");
-
   Node * n = (Node*)calloc(1, sizeof(Node));
 
   n->parent = NULL;

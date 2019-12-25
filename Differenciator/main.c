@@ -21,19 +21,20 @@ int main()
   TeXPrint(NULL, NULL, TeX_start, 0);
   MoyaLubovKMatanu(StartDiff, 0);
   MoyaLubovKMatanu(InDiff, 0);
-  //diffTree.root = NodeAlloc(&diffTree);
-  diffTree.root = Differenciator(&diffTree, Tree.root);
-  //diffTree.root->left->parent = diffTree.root;
+
+  int rofl = 0;
+  diffTree.root = Differenciator(&diffTree, Tree.root, &rofl);
 
   MoyaLubovKMatanu(PresentDiff, 1);
-  TeXPrint(&Tree, Tree.root->left, TeX_print, diff);
-  TeXPrint(&diffTree, diffTree.root->left, TeX_print, enddiff);
+  TeXPrint(&Tree, Tree.root, TeX_print, diff);
+  TeXPrint(&diffTree, diffTree.root, TeX_print, enddiff);
   MoyaLubovKMatanu(FinishDiff, 0);
   TeXPrint(&Tree, NULL, TeX_finish, 0);
-  FILE * pr = fopen("pr", "w+");
+
+  digraph(diffTree.root, "digraph");
+  FILE * pr = fopen("tree_debug", "w+");
   PrintTree(diffTree.root, pr);
   fclose(pr);
-  system("tex differ.tex");
 
   TreeDeleter(&Tree);
   TreeDeleter(&diffTree);

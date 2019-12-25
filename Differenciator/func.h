@@ -3,8 +3,8 @@
 #define d_operator 3
 #define d_const 4
 
-#define dl                    Differenciator(t, n->left)
-#define dr                    Differenciator(t, n->right)
+#define dl                    Differenciator(t, n->left, rofl)
+#define dr                    Differenciator(t, n->right, rofl)
 #define l                     TreeCopy(t, indif, n->left, 'L')
 #define r                     TreeCopy(t, indif, n->right, 'L')
 

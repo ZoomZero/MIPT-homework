@@ -57,7 +57,7 @@ char * readfile(char * filename, int * pos)
   return text;
 }
 
-Node * _TreeCopy(tree * t, Node * top, Node * n, char branch)
+Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
 {
   assert(t != NULL);
   assert(n != NULL);
@@ -79,13 +79,13 @@ Node * _TreeCopy(tree * t, Node * top, Node * n, char branch)
     }
   }
 
-  if (n->left != NULL) _TreeCopy(t, new_node, n->left, 'L');
-  if (n->right != NULL) _TreeCopy(t, new_node, n->right, 'R');
+  if (n->left != NULL) TreeCopy(t, new_node, n->left, 'L');
+  if (n->right != NULL) TreeCopy(t, new_node, n->right, 'R');
 
   return new_node;
 }
 
-Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
+/*Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
 {
   assert(t != NULL);
   assert(n != NULL);
@@ -96,7 +96,7 @@ Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
   }
 
   return _TreeCopy(t, top, n, branch);
-}
+}*/
 
 Node * TypeNode(tree * t, int type, char * data, Node * l, Node * r)
 {
@@ -199,7 +199,7 @@ void TeXPrint(tree * t, Node * n, int pos, int status)
       fprintf(file_TeX, "\\documentclass[a4paper,12pt]{article}\n");
       fprintf(file_TeX, "\\usepackage[T2A]{fontenc}\n\\usepackage[utf8]{inputenc}\n\\usepackage[english,russian]{babel}\n");
       fprintf(file_TeX, "\\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}\n");
-      fprintf(file_TeX, "\\author{By Borisenkov } \n\\title{Differentiator \\LaTeX{}} \n\\date{\\today}");
+      fprintf(file_TeX, "\\author{By Borisenkov Ivan} \n\\title{Differentiator \\LaTeX{}} \n\\date{\\today}");
       fprintf(file_TeX, "\\begin{document}\n\\maketitle\n\\newpage");
       fclose(file_TeX);
 
@@ -280,6 +280,8 @@ void MoyaLubovKMatanu(int phrase, int status)
         case bread:
           fprintf(file_TeX, "Как же мне надоело заниматься такой фигнёй. Какие блин производные я создан для чего-то большего!\n");
 
+          break;
+
         case bread2:
           fprintf(file_TeX, "Кстати, а я рассказвал тебе сказку о паравозике, который смог?\n");
 
@@ -343,10 +345,14 @@ void TypeIdentify(tree * diffTree, Node * n)
   TypeIdentify(diffTree, n->right);
 }
 
-Node * Differenciator (tree * t, Node * n)
+Node * Differenciator (tree * t, Node * n, int * rofl)
 {
   assert(t != NULL);
   assert(n != NULL);
+
+  (*rofl)++;
+  printf("1 -%d\n", (*rofl)%3);
+  printf("2 -%d\n", (*rofl)%6);
 
   Node * indif = NULL;
 
@@ -378,7 +384,7 @@ Node * Differenciator (tree * t, Node * n)
     if (strcmp(#Name, n->word) == 0) {\
       indif = Declaration;\
       assert(indif != NULL);\
-      MoyaLubovKMatanu(InDiff, nodiff);\
+      Variable(rofl);\
       TeXPrint(t, n, TeX_print, diff);\
       TeXPrint(t, indif, TeX_print, enddiff);\
     }
@@ -389,6 +395,27 @@ Node * Differenciator (tree * t, Node * n)
   }
 
   return indif;
+}
+
+void Variable(int * rofl)
+{
+  if((*rofl)%3 == 0 && (*rofl) != 0)
+  {
+    printf("eban\n");
+    MoyaLubovKMatanu(InDiff, bread);
+    (*rofl) = 4;
+  }
+  else if((*rofl)%6 == 0 && (*rofl) != 0)
+  {
+    printf("kek\n");
+    MoyaLubovKMatanu(InDiff, bread2);
+    (*rofl) = 1;
+  }
+  else
+  {
+    MoyaLubovKMatanu(InDiff, nodiff);
+    (*rofl) = 0;
+  }
 }
 
 #endif
