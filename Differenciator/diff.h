@@ -42,7 +42,7 @@ char * readfile(char * filename, int * pos)
   FILE * file = fopen(filename, "r");
   if (file == NULL)
   {
-    printf("%s\n", "Error reading file int f. size_and_buffer");
+    printf("%s\n", "Error reading file int f. readfile");
     return NULL;
   }
 
@@ -57,36 +57,49 @@ char * readfile(char * filename, int * pos)
   return text;
 }
 
-Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
+Node * _TreeCopy(tree * t, Node * top, Node * n, char branch)
 {
   assert(t != NULL);
-  assert(top != NULL);
+  assert(n != NULL);
 
-  printf("going to alloc in TreeCopy\n");
   Node * new_node = NodeAlloc(t);
   new_node->word = strdup(n->word);
   new_node->type = n->type;
   new_node->parent = top;
 
-  if(top!= NULL)
+  if(top != NULL)
   {
-    if(branch == 'L') top->left = new_node;
-    else if (branch == 'R') top->right = new_node;
+    if(branch == 'L')
+    {
+      top->left = new_node;
+    }
+    else if (branch == 'R')
+    {
+      top->right = new_node;
+    }
   }
 
-  if (n->left != NULL) TreeCopy(t, new_node, n->left, 'L');
-  if (n->right != NULL) TreeCopy(t, new_node, n->right, 'R');
-
-  printf("copying...\n");
-  Printtt(new_node);
+  if (n->left != NULL) _TreeCopy(t, new_node, n->left, 'L');
+  if (n->right != NULL) _TreeCopy(t, new_node, n->right, 'R');
 
   return new_node;
 }
 
+Node * TreeCopy(tree * t, Node * top, Node * n, char branch)
+{
+  assert(t != NULL);
+  assert(n != NULL);
+
+  if (top != NULL)
+  {
+    char * per = top->word;
+  }
+
+  return _TreeCopy(t, top, n, branch);
+}
+
 Node * TypeNode(tree * t, int type, char * data, Node * l, Node * r)
 {
-  printf("data in node %s\n", data);
-  printf("goint to alloc in TypeNode\n");
   Node * n = NodeAlloc(t);
 
   if(type == op_t)
@@ -111,9 +124,67 @@ Node * TypeNode(tree * t, int type, char * data, Node * l, Node * r)
   return n;
 }
 
-void PrintTexDescent(tree * t, Node * n, FILE * file_TeX, int status, int * rec)
+Node * PrintTexDescent(tree * t, Node * n, FILE * file_TeX, int status, int * rec)
 {
+  assert(t != NULL);
+  assert(n != NULL);
+  (*rec)++;
 
+  if (status == diff) fprintf(file_TeX, "\\left( ");
+  if (n->word[0] == '/') fprintf(file_TeX, "\\frac{");
+  if (strcmp("log", n->word) == 0) fprintf(file_TeX, "\\log_");
+  if ((n->word[0] == '+') || (n->word[0] == '-'))
+    if (n->parent != NULL)
+    {
+      if (strcmp("sqrt", n->parent->word) != 0)  fprintf(file_TeX, "\\left( ");
+    }
+    else fprintf(file_TeX, "\\left( ");
+
+  if (n->left != NULL)
+  {
+    if (strcmp("sqrt", n->word) == 0) fprintf(file_TeX, "\\%s {", n->word);
+    if ((n->right == NULL) && (strcmp("sqrt", n->word) != 0)) fprintf(file_TeX, "%s \\left( ", n->word);
+
+    fprintf(file_TeX, "{");
+    PrintTexDescent(t, n->left, file_TeX, nodiff, rec);
+    fprintf(file_TeX, "}");
+
+    if (n->right != NULL)
+    {
+      if ((n->word[0] != '/') && (strcmp("log", n->word) != 0)) fprintf(file_TeX, "%s ", n->word);
+    }
+    else if (strcmp("sqrt", n->word) != 0) fprintf(file_TeX, "\\right) ");
+         else fprintf(file_TeX, "} ");
+  }
+
+  if (n->word[0] == '/')  fprintf(file_TeX, "}{");
+
+  if (n->right != NULL)
+  {
+    if (strcmp("log", n->word) == 0) fprintf(file_TeX, "\\left( ");
+
+    fprintf(file_TeX, "{");
+    PrintTexDescent(t, n->right, file_TeX, nodiff, rec);
+    fprintf(file_TeX, "}");
+
+    if (strcmp("log", n->word) == 0) fprintf(file_TeX, "\\right) ");
+  }
+
+
+  if ((n->left == NULL) && (n->right == NULL)) fprintf(file_TeX, "%s ", n->word);
+
+
+  if (n->word[0] == '/') fprintf(file_TeX, "}");
+  if ((n->word[0] == '+') || (n->word[0] == '-'))
+    if (n->parent != NULL)
+    {
+        if (strcmp("sqrt", n->parent->word) != 0) fprintf(file_TeX, "\\right) ");
+    }
+    else fprintf(file_TeX, "\\right) ");
+
+    if (status == diff) fprintf(file_TeX, "\\right)' ");
+
+  return n;
 }
 
 void TeXPrint(tree * t, Node * n, int pos, int status)
@@ -128,7 +199,7 @@ void TeXPrint(tree * t, Node * n, int pos, int status)
       fprintf(file_TeX, "\\documentclass[a4paper,12pt]{article}\n");
       fprintf(file_TeX, "\\usepackage[T2A]{fontenc}\n\\usepackage[utf8]{inputenc}\n\\usepackage[english,russian]{babel}\n");
       fprintf(file_TeX, "\\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}\n");
-      fprintf(file_TeX, "\\author{By Ivan Borisenkov} \n\\title{Differentiator \\LaTeX{}} \n\\date{\\today}");
+      fprintf(file_TeX, "\\author{By Borisenkov } \n\\title{Differentiator \\LaTeX{}} \n\\date{\\today}");
       fprintf(file_TeX, "\\begin{document}\n\\maketitle\n\\newpage");
       fclose(file_TeX);
 
@@ -277,10 +348,7 @@ Node * Differenciator (tree * t, Node * n)
   assert(t != NULL);
   assert(n != NULL);
 
-  printf("word in n %s\n", n->word);
-  Printtt(n);
-  printf("\n");
-  Node * indif; //= NULL;
+  Node * indif = NULL;
 
   if (n->type == value_t || n->type == const_t)
   {
