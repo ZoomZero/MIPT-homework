@@ -28,6 +28,10 @@ int main()
   MoyaLubovKMatanu(PresentDiff, 1);
   TeXPrint(&Tree, Tree.root, TeX_print, diff);
   TeXPrint(&diffTree, diffTree.root, TeX_print, enddiff);
+  MoyaLubovKMatanu(ShortDiff, 0);
+  ShortTree(&diffTree);
+  TeXPrint(&Tree, Tree.root, TeX_print, diff);
+  TeXPrint(&diffTree, diffTree.root, TeX_print, enddiff);
   MoyaLubovKMatanu(FinishDiff, 0);
   TeXPrint(&Tree, NULL, TeX_finish, 0);
 

@@ -14,7 +14,8 @@ enum DiffStatus
   nodiff = 2,
   enddiff = 3,
   bread = 4,
-  bread2 = 5
+  bread2 = 5,
+  bread3 = 6
 };
 
 enum TeXPhrase
@@ -287,6 +288,11 @@ void MoyaLubovKMatanu(int phrase, int status)
 
           break;
 
+        case bread3:
+          fprintf(file_TeX, "ЕСКЕРЕ КСЕРЕ ЛЕТС ГЕТЬ ИТ\n");
+
+          break;
+
         default: break;
       }
 
@@ -345,14 +351,40 @@ void TypeIdentify(tree * diffTree, Node * n)
   TypeIdentify(diffTree, n->right);
 }
 
+void Variable(int * rofl)
+{
+  if((*rofl)%4 == 0 && (*rofl) != 1)
+  {
+    MoyaLubovKMatanu(InDiff, bread);
+    (*rofl)++;
+  }
+  else if((*rofl)%6== 0 && (*rofl) != 1)
+  {
+    MoyaLubovKMatanu(InDiff, bread2);
+    (*rofl)++;
+  }
+  else if((*rofl)%7 == 0 && (*rofl) != 1)
+  {
+    MoyaLubovKMatanu(InDiff, bread3);
+    (*rofl)++;
+  }
+  else if((*rofl)%11 == 0 && (*rofl) != 1)
+  {
+    MoyaLubovKMatanu(InDiff, enddiff);
+    (*rofl) = 3;
+  }
+  else
+  {
+    MoyaLubovKMatanu(InDiff, nodiff);
+  }
+}
+
 Node * Differenciator (tree * t, Node * n, int * rofl)
 {
   assert(t != NULL);
   assert(n != NULL);
 
   (*rofl)++;
-  printf("1 -%d\n", (*rofl)%3);
-  printf("2 -%d\n", (*rofl)%6);
 
   Node * indif = NULL;
 
@@ -397,25 +429,125 @@ Node * Differenciator (tree * t, Node * n, int * rofl)
   return indif;
 }
 
-void Variable(int * rofl)
+void NodeDelete(Node * n)
 {
-  if((*rofl)%3 == 0 && (*rofl) != 0)
-  {
-    printf("eban\n");
-    MoyaLubovKMatanu(InDiff, bread);
-    (*rofl) = 4;
-  }
-  else if((*rofl)%6 == 0 && (*rofl) != 0)
-  {
-    printf("kek\n");
-    MoyaLubovKMatanu(InDiff, bread2);
-    (*rofl) = 1;
-  }
-  else
-  {
-    MoyaLubovKMatanu(InDiff, nodiff);
-    (*rofl) = 0;
-  }
+  if(!n) return;
+
+  NodeDelete(n->left);
+  NodeDelete(n->right);
+
+  free(n->word);
+  free(n);
 }
+
+void ShortAdd(tree * t, Node * n)
+{
+  if (!n || n->type != op_t) return;
+
+  if(n->type == op_t && n->word[0] == '+' && strcmp(n->left->word, "0") == 0)
+  {
+    NodeDelete(n->left);
+    if(n->parent->left == n)
+    {
+      n->parent->left = TreeCopy(t, n->parent, n->right, 'L');
+      n = n->parent->left;
+    }
+    else
+    {
+      n->parent->right = TreeCopy(t, n->parent, n->right, 'R');
+      n = n->parent->right;
+    }
+  }
+
+  if(n->type == op_t && n->word[0] == '+' && strcmp(n->right->word, "0") == 0)
+  {
+    NodeDelete(n->right);
+    if(n->parent->left == n)
+    {
+      n->parent->left = TreeCopy(t, n->parent, n->left, 'L');
+      n = n->parent->left;
+    }
+    else
+    {
+      n->parent->right = TreeCopy(t, n->parent, n->left, 'R');
+      n = n->parent->right;
+    }
+  }
+
+  if(n->left != NULL) ShortAdd(t, n->left);
+  if(n->right != NULL) ShortAdd(t, n->right);
+}
+
+void ShortMul(tree * t, Node * n)
+{
+  if (!n || n->type != op_t) return;
+
+  if(n->type == op_t && n->word[0] == '*' && strcmp(n->left->word, "0") == 0)
+  {
+      n->word = strdup(n->left->word);
+      n->type = value_t;
+      NodeDelete(n->left);
+      NodeDelete(n->right);
+      n->left = NULL;
+      n->right = NULL;
+  }
+
+  if(n->type == op_t && n->word[0] == '*' && strcmp(n->right->word, "0") == 0)
+  {
+    n->word = strdup(n->right->word);
+    n->type = value_t;
+    NodeDelete(n->left);
+    NodeDelete(n->right);
+    n->left = NULL;
+    n->right = NULL;
+  }
+
+  if(n->type == op_t && n->word[0] == '*' && strcmp(n->right->word, "1") == 0)
+  {
+    NodeDelete(n->right);
+    if(n->parent->left == n)
+    {
+      n->parent->left = TreeCopy(t, n->parent, n->left, 'L');
+      n = n->parent->left;
+    }
+    else
+    {
+      n->parent->right = TreeCopy(t, n->parent, n->left, 'R');
+      n = n->parent->right;
+    }
+  }
+
+  if(n->type == op_t && n->word[0] == '*' && strcmp(n->left->word, "1") == 0)
+  {
+    NodeDelete(n->left);
+    if(n->parent->left == n)
+    {
+      n->parent->left = TreeCopy(t, n->parent, n->right, 'L');
+      n = n->parent->left;
+    }
+    else
+    {
+      n->parent->right = TreeCopy(t, n->parent, n->right, 'R');
+      n = n->parent->right;
+    }
+  }
+
+  if(n->left != NULL) ShortMul(t, n->left);
+  if(n->right != NULL) ShortMul(t, n->right);
+}
+
+void ShortTree(tree * t)
+{
+  assert(t != NULL);
+
+  Node * n = t->root;
+
+  ShortAdd(t, n);
+  // ShortDiv(t, n);
+  // ShortSub(t, n);
+  ShortMul(t, n);
+  ShortAdd(t, n);
+}
+
 
 #endif

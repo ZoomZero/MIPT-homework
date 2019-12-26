@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1577301169 "differ.tex" "differ.pdf" "differ" 1577301246
+["pdflatex"] 1577385961 "differ.tex" "differ.pdf" "differ" 1577385961
   "/etc/texmf/web2c/texmf.cnf" 1567957318 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/ivan/.texlive2018/texmf-var/fonts/tfm/lh/lh-t2a/larm1200.tfm" 1576870470 3240 c2435f2b5cd66d4930bc29b8df87967e ""
   "/home/ivan/.texlive2018/texmf-var/fonts/tfm/lh/lh-t2a/larm1440.tfm" 1576870477 3256 3daaa33cf35cf3f354983aa3214ecd7f ""
@@ -81,9 +81,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1551226139 34566 ab5be96bde1a5acfd4f881dbe566b5fb ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1567957368 3236060 fd056e42459c13cbcb0cc6e0a7cae8d4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1567957379 4224889 abd180da9aab35adce6e313dce157627 ""
-  "differ.aux" 1577301169 50 0fef47af310be850185ccf42e00e9455 ""
-  "differ.tex" 1577301246 3344 911343d8037fe27d2e6fe105697e626f ""
+  "differ.aux" 1577385961 50 0fef47af310be850185ccf42e00e9455 ""
+  "differ.tex" 1577385961 3704 63603b06961f94ad743777a40eae2d97 ""
   (generated)
-  "differ.pdf"
   "differ.log"
+  "differ.pdf"
   "differ.aux"
