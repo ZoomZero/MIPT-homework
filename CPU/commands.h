@@ -1,4 +1,4 @@
-#define POS *pos_number
+#define POS (*pos_number)
 #define NEXT_P ++(POS)
 #define PREV_P --(POS)
 
@@ -37,7 +37,7 @@
   return 0;\
   END_COMMAND\
 
-#define POP_REG_CODE
+#define POP_REG_CODE\
   START_COMMAND(*programme_status)\
   \
   NEXT_P;\
@@ -130,7 +130,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x < y) POS = command[POS];\
   PREV_P;\
   \
@@ -142,7 +142,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x > y) POS = command[POS];\
   PREV_P;\
   \
@@ -154,7 +154,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x <= y) POS = command[POS];\
   PREV_P;\
   \
@@ -166,7 +166,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x >= y) POS = command[POS];\
   PREV_P;\
   \
@@ -178,7 +178,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x == y) POS = command[POS];\
   PREV_P;\
   \
@@ -190,7 +190,7 @@
   \
   NEXT_P;\
   POP(x);\
-  POS(y);\
+  POP(y);\
   if(x != y) POS = command[POS];\
   PREV_P;\
   \

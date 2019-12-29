@@ -89,7 +89,7 @@ int StackConstruct(stack_t * stk, ...)
     stk->cannery2 = stk->cannery3 = CANN_VALUE2;
   }
   else
-  
+  {
     stk->size = 0;
     stk->capacity = init_size;
     stk->hash = 0;
