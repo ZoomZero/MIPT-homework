@@ -11,7 +11,7 @@ mul
 out
 push ax
 push 1
-add
+sum
 pop ax
 jmp next
 stop:

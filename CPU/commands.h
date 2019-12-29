@@ -1,50 +1,212 @@
-#define next_p (++(*position_number))
-#define prev_p (--(*position_number))
+#define POS *pos_number
+#define NEXT_P ++(POS)
+#define PREV_P --(POS)
 
-#define DEF_LABEL for (int j = 0; j < label_cnt; j++) { \
-                          if(strcmp(par, label[j].name) == 0) \
-                              return label[j].pos; \
-                       }
+#define START_COMMAND(status) \
+   if (status == StartProgram) {
 
+#define POP(EL) data_t EL = StackPop(stk)
 
-#define DEF_REG(name, number_reg, number) \
-if(strcmp(#name, par) == 0) \
-return number;
+#define PUSH(EL) StackPush(stk, EL)
 
+#define END_COMMAND }
 
-#define SPEC(number) {\
-  p++;\
-  par = commands[p];\
-  printf("number spec %d %s %d\n", number, par, atoi(commands[p]));\
-  DEF_REG(ax, 1, number)\
-  DEF_REG(bx, 2, number)\
-  DEF_REG(cx, 3, number)\
-  DEF_REG(dx, 4, number)\
-  printf("camed\n");\
-  return atoi(commands[p]);\
-}
+#define PUSH_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  PUSH(command[POS]);\
+  \
+  return 0;\
+  END_COMMAND\
 
-#define PUSH_CODE
-#define PUSH_REG_CODE
-#define POP_CODE
+#define PUSH_REG_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  PUSH(reg[command[POS] - 1]);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define POP_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  \
+  return 0;\
+  END_COMMAND\
+
 #define POP_REG_CODE
-#define IN_CODE
-#define OUT_CODE
-#define SUM_CODE
-#define SUB_CODE
-#define MUL_CODE
-#define DIV_CODE
-#define SQRT_CODE
-#define JMP_CODE
-#define JA_CODE
-#define JB_CODE
-#define JAE_CODE
-#define JBE_CODE
-#define JE_CODE
-#define JNE_CODE
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  reg[command[POS] - 1] = x;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define IN_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  data_t el;\
+  scanf("%d\n", &el);\
+  PUSH(el);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define OUT_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  printf("%d\n", x);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define SUM_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  POP(y);\
+  PUSH(x + y);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define SUB_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  POP(y);\
+  PUSH(x - y);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define MUL_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  POP(y);\
+  PUSH(x * y);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define DIV_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  POP(y);\
+  PUSH(x / y);\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define SQRT_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  POP(x);\
+  if(x >= 0) PUSH(sqrt(x));\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JMP_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JA_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x < y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JB_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x > y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JAE_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x <= y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JBE_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x >= y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JE_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x == y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
+#define JNE_CODE\
+  START_COMMAND(*programme_status)\
+  \
+  NEXT_P;\
+  POP(x);\
+  POS(y);\
+  if(x != y) POS = command[POS];\
+  PREV_P;\
+  \
+  return 0;\
+  END_COMMAND\
+
 #define CALL_CODE
 #define RETURN_CODE
-#define END_CODE
+
+#define END_CODE\
+  START_COMMAND(*programme_status)\
+  \
+    *programme_status = EndProgram;\
+  \
+  return EndProgram;\
+  END_COMMAND\
 
 DEF_CMD( push, 1, SPEC(2), PUSH_CODE)
 DEF_CMD( push, 2, , PUSH_REG_CODE)

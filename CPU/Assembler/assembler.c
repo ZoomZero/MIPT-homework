@@ -6,9 +6,6 @@
 #include <string.h>
 
 const char poison = 255;
-int p = 0;
-
-#define label_t struct labels
 
 char * fileread(const char * filename, int * pos)
 {
@@ -62,6 +59,8 @@ char ** command_separator(char * text, int pos, int * count, int * label_cnt)
   return commands;
 }
 
+#define label_t struct labels
+
 struct labels
 {
   int pos;
@@ -75,76 +74,85 @@ void label_creator(label_t * label, int label_cnt, char ** commands, int comm_co
   //char * comm_el = *commands;
   //printf("%c", *comm_el);
   //const char* str1 = s1 + strlen(s1) - 1;
-  for(int i = 0, j = 0; i < comm_count - 1; i++)
+  for(int i = 0, j = 0; i < comm_count - 2; i++)
   {
     char * comm_el = *commands + strlen(*commands) - 1;
+    //printf("%c", *comm_el);
     if(*comm_el == ':')
     {
       label[j].pos = i;
-      label[j].name = (char*)calloc(strlen(*commands) - 1, sizeof(char));
-      label[j].name = *commands;
+      label[j].name = strdup(*commands);
       label[j].name[strlen(*commands) - 1] = '\0';
       //printf("%d\n", strcmp(label[j].name, "start"));
       printf("lb -%s -%d\n", label[j].name, label[j].pos);
       j++;
+      if(j != 0) i--;
     }
     *(commands++);
   }
 }
 
-int translator(char * par, label_t label[], int label_cnt, char ** commands)
+int translator(char ** par, label_t label[], int label_cnt, int * binarycode, int comm_count)
 {
-  //assert(commands != NULL);
-  //assert(buffer != NULL);
-  printf("beg par = %s\n", par);
-  #define DEF_CMD(name, number, spec, code) if (strcmp(par, #name) == 0) { \
-                                                spec; \
-                                                printf("name in DEF_CMD = %s\n", #name); \
-                                                return number; \
-                                            }
+  assert(par != NULL);
+  assert(binarycode != NULL);
 
-  #include "../commands.h"
-
-  #undef DEF_CMD
-
-  /*for(int i = 0; i < comm_count; i++)
+  for(int i = 0, p = 0; i < comm_count; i++)
   {
-    if(strcmp(commands[i], "push") == 0)
-      if(strcmp(commands[i+1], "ax") == 0 || strcmp(commands[i+1], "ax") == 0 ||
-        strcmp(commands[i+1], "ax") == 0 || strcmp(commands[i+1], "ax") == 0) buffer[i] = 12;
-      else
-      {
-        buffer[i] = 1;
-        //buffer[i++] = ...;
-      }
-    if(strcmp(commands[i], "pop") == 0)
-    if(strcmp(commands[i+1], "ax") == 0 || strcmp(commands[i+1], "ax") == 0 ||
-      strcmp(commands[i+1], "ax") == 0 || strcmp(commands[i+1], "ax") == 0) buffer[i] = 12;
-    else
-    {
-      buffer[i] = 2;
-      //buffer[i++] = ...;
-    }
-    if(strcmp(commands[i], "in") == 0) buffer[i] = 3;
-    if(strcmp(commands[i], "out") == 0) buffer[i] = 4;
-    if(strcmp(commands[i], "sum") == 0) buffer[i] = 5;
-    if(strcmp(commands[i], "sub") == 0) buffer[i] = 6;
-    if(strcmp(commands[i], "mul") == 0) buffer[i] = 7;
-    if(strcmp(commands[i], "div") == 0) buffer[i] = 8;
-    if(strcmp(commands[i], "sqrt") == 0) buffer[i] = 9;
-    if(strcmp(commands[i], "end") == 0) buffer[i] = 10;
-    if(strcmp(commands[i], "sin") == 0) buffer[i] = 11;
-    if(strcmp(commands[i], "cos") == 0) buffer[i] = 12;
-    if(strcmp(commands[i], "jmp") == 0) buffer[i] = 14;
-    if(strcmp(commands[i], "ja") == 0) buffer[i] = 15;
-    if(strcmp(commands[i], "jb") == 0) buffer[i] = 16;
-    if(strcmp(commands[i], "je") == 0) buffer[i] = 17;
-    for(int j = 0; j < label_cnt; j++)
-    {
-      //if(strcmp(buffer[i], label[j].name) == 0) buffer[i] = label[j].pos;
-    }
+    printf("beg par = %s, p = %d\n", par[i], p);
+    #define DEF_CMD(name, number, spec, code) if (strcmp(par[i], #name) == 0) { \
+                                                  printf("camed\n");\
+                                                  spec; \
+                                                  printf("name in DEF_CMD = %s\n", #name); \
+                                                  binarycode[p] = number;\
+                                                  printf("%d\n", binarycode[p]);\
+                                                  p++;\
+                                              }
 
-  }*/
+  #define DEF_LABEL {\
+    for (int j = 0; j < label_cnt; j++) { \
+                            if(strcmp(par[i], label[j].name) == 0) {\
+                              binarycode[p] = label[j].pos;\
+                              printf("camed lbl %s\n", label[j].name);\
+                              p++;\
+                         }\
+                       }\
+                       continue;\
+                     }
+
+
+  #define DEF_REG(name, number_reg, number) \
+  if(strcmp(#name, par[i+1]) == 0) {\
+    binarycode[p] = number;\
+    p++;\
+    binarycode[p] = number_reg;\
+    printf("p-1 %d %d\np   %d %d\n", p-1, binarycode[p-1], p, binarycode[p]);\
+    p++;\
+    continue;\
+  }
+
+
+  #define SPEC(number) {\
+    DEF_REG(ax, 1, number)\
+    DEF_REG(bx, 2, number)\
+    DEF_REG(cx, 3, number)\
+    DEF_REG(dx, 4, number)\
+    binarycode[p] = number - 1;\
+    p++;\
+    binarycode[p] = atoi(par[i+1]);\
+    printf("p-1 %d %d\np   %d %d\n", p-1, binarycode[p-1], p, binarycode[p]);\
+    p++;\
+    continue;\
+  }
+
+    #include "../commands.h"
+
+    #undef DEF_CMD
+    #undef DEF_LABEL
+    #undef DEF_REG
+    #undef SPEC
+
+  }
 
   return poison;
 }
@@ -177,29 +185,20 @@ int main(int argc, char const *argv[])
   struct labels label[label_count];
 
   label_creator(label, label_count, commands, comm_count);
+  //for(int i = 0; i < comm_count; i++) printf("%s\n", commands[i]);
   //for(int i = 0; i < label_count; i++) printf("%s\n", label[i].name);
-  int * binarycode = (int*)calloc(comm_count, sizeof(int));
+  int * binarycode = (int*)calloc(comm_count-label_count, sizeof(int));
   //printf("%s\n", commands[0]);
   /*printf("%s\n", *commands);
   *(commands++);
   printf("%s\n", *commands);*/
-  //translator(commands, comm_count, binarycode, label_count);
-  int t = 0;
-  for( ; p < comm_count; p++)
-  {
-    int between = translator(commands[p], label, label_count, commands);
-    printf("between = %d\n", between);
-    if (between != -1 && between != 0)
-    {
-      binarycode[t] = between;
-      t++;
-    }
-  }
+  translator(commands, label, label_count, binarycode, comm_count);
 
-  for(int k = 0; k < comm_count - label_count; k++) printf("%d\n", binarycode[k]);
-  //code_to_file(binarycode, comm_count - label_count);
 
-  //label_clner(label, label_count);*/
+  for(int k = 0; k < comm_count - label_count; k++) printf("%d %d\n", k, binarycode[k]);
+  code_to_file(binarycode, comm_count - label_count);
+
+  label_clner(label, label_count);
   free(input);
   free(commands);
   free(binarycode);

@@ -1,14 +1,6 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-
 #define VAR_NAME(var) #var
 #define stack_t struct stack
 
@@ -97,7 +89,7 @@ int StackConstruct(stack_t * stk, ...)
     stk->cannery2 = stk->cannery3 = CANN_VALUE2;
   }
   else
-  {
+  
     stk->size = 0;
     stk->capacity = init_size;
     stk->hash = 0;
@@ -344,4 +336,4 @@ int murmur_hash(stack_t * stk)
   return h;
 }
 
-#endif _STACK_H_
+#endif
